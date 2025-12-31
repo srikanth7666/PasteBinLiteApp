@@ -30,8 +30,9 @@ module.exports = async (req, res) => {
       url: `${process.env.BASE_URL}/paste/${id}`,
     });
   }
-
-  // GET PASTE
+  
+  //GET PASTE
+  
   if (req.method === "GET") {
     const { id } = req.query;
 
