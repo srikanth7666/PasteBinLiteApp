@@ -1,6 +1,7 @@
 const connectDB = require("../lib/db");
 const Paste = require("../models/Paste");
-const { nanoid } = require("nanoid");
+
+const crypto = require("crypto");
 
 module.exports = async (req, res) => {
   await connectDB();
@@ -13,7 +14,7 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: "Content is required" });
     }
 
-    const id = nanoid(8);
+    const id = crypto.randomUUID().slice(0, 8);
 
     const expiresAt = expiresIn
       ? new Date(Date.now() + expiresIn * 1000)
@@ -30,9 +31,9 @@ module.exports = async (req, res) => {
       url: `${process.env.BASE_URL}/paste/${id}`,
     });
   }
-  
+
   //GET PASTE
-  
+
   if (req.method === "GET") {
     const { id } = req.query;
 
@@ -46,7 +47,8 @@ module.exports = async (req, res) => {
       return res.status(410).json({ error: "Paste expired" });
     }
 
-    paste.views += 1;
+    // inside GET
+    paste.views = (paste.views || 0) + 1;
     await paste.save();
 
     return res.json({ content: paste.content });
